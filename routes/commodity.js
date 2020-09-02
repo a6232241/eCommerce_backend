@@ -1,6 +1,7 @@
 const router = require('koa-router')()
 const { query } = require('../dbConfig')
 const shortid = require('shortid')
+const multer = require('@koa/multer')()
 
 router.get('/setCommodity', async (ctx, next) => {
   let commodityData = [
@@ -81,10 +82,42 @@ router.get('/getCommodityList', async (ctx, next) => {
     resSql = JSON.parse(JSON.stringify(resSql))
     resData = {
       message: '有存貨',
-      data: resSql
+      data: resSql,
     }
   }
+  ctx.body = resData
+})
 
+router.post('/getCommodityItem', multer.array(), async (ctx, next) => {
+  let req = {
+    style: ctx.request.body.style,
+    aid: ctx.request.body.aid,
+  }
+  console.log(req)
+  let resSql
+  if (req.aid === undefined) {
+    // 搜尋商品類型
+    let sql = 'SELECT aid, title, price, imgPath, style FROM commodity WHERE style = ?'
+    resSql = await query(sql, req.style)
+  } else {
+    // 搜尋商品明細
+    let sql =
+      'SELECT title, price, imgPath, color, size FROM commodity WHERE style = ? AND aid = ?'
+    resSql = await query(sql, Object.values(req))
+  }
+
+  let resData = {}
+  if (resSql[0] === undefined) {
+    resData = {
+      message: '沒有商品',
+    }
+  } else {
+    resSql = JSON.parse(JSON.stringify(resSql))
+    resData = {
+      message: '有存貨',
+      data: resSql,
+    }
+  }
   ctx.body = resData
 })
 

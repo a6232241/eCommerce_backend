@@ -93,7 +93,6 @@ router.post('/getCommodityItem', multer.array(), async (ctx, next) => {
     style: ctx.request.body.style,
     aid: ctx.request.body.aid,
   }
-  console.log(req)
   let resSql
   if (req.aid === undefined) {
     // 搜尋商品類型

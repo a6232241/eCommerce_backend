@@ -18,13 +18,15 @@ router.post('/getUUIDdata', multer.array(), async (ctx, next) => {
   let req = {
     uuid: ctx.request.body.uuid,
   }
-  let sql = 'SELECT data FROM users WHERE uuid=?'
+  let sql =
+    'SELECT users.data AS user, commodity.title AS title, commodity.price AS price ' +
+    'FROM users JOIN commodity ON users.aid=commodity.aid WHERE uuid=?'
   let resSql = await query(sql, req.uuid)
 
   let resData = {}
   if (resSql[0] === undefined) {
     resData = {
-      message: 'faild',
+      message: 'notData',
     }
   } else {
     resData = {
@@ -39,19 +41,18 @@ router.post('/addUUIDdata', multer.array(), async (ctx, next) => {
   let req = {
     uuid: ctx.request.body.uuid,
     shopping: ctx.request.body.shopping,
+    aid: ctx.request.body.aid,
   }
   let sql = 'SELECT data FROM users WHERE uuid=?'
   let resSql = await query(sql, req.uuid)
-
   let resData = {}
   if (resSql[0] === undefined) {
     resData = {
       message: 'faild',
     }
   } else {
-    resSql = JSON.parse(JSON.stringify(resSql[0]))
-    let reqSqlData = resSql.data + req.shopping
-    // sql = 'UPDATE users set data=? WHERE uuid=?'
+    sql = 'INSERT INTO users(uuid, data, aid) VALUES(?, ?, ?)'
+    await query(sql, Object.values(req))
     resData = {
       message: 'add',
     }

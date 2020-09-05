@@ -34,7 +34,7 @@ app.use(
       if (ctx.url === '/') {
         return '*'
       }
-      return 'http://localhost:3000'
+      return 'http://127.0.0.1:5500'
     }, // 允许这个域名的 跨域请求
     exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
     maxAge: 5,

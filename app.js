@@ -34,7 +34,7 @@ app.use(
       if (ctx.url === '/') {
         return '*'
       }
-      return 'http://127.0.0.1:5500'
+      return 'https://e-commerce-plat.herokuapp.com'
     }, // 允许这个域名的 跨域请求
     exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
     maxAge: 5,

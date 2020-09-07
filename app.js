@@ -34,7 +34,8 @@ app.use(
       if (ctx.url === '/') {
         return '*'
       }
-      return 'https://e-commerce-plat.herokuapp.com'
+      // return 'https://e-commerce-plat.herokuapp.com'
+      return 'http://localhost:3000'
     }, // 允许这个域名的 跨域请求
     exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
     maxAge: 5,
@@ -71,11 +72,13 @@ app.use(
 const index = require('./routes/index')
 const commodity = require('./routes/commodity')
 const shoppingCart = require('./routes/shoppingCart')
+const shopCheckout = require('./routes/shopCheckout')
 
 // routes
 app.use(index.routes(), index.allowedMethods())
 app.use(commodity.routes(), commodity.allowedMethods())
 app.use(shoppingCart.routes(), shoppingCart.allowedMethods())
+app.use(shopCheckout.routes(), shopCheckout.allowedMethods())
 
 const PORT = process.env.PORT || '8081'
 app.listen(PORT)

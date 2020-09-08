@@ -7,7 +7,7 @@ router.post('/shopCheckout', multer.array(), async (ctx, next) => {
   let req = {
     userId: ctx.request.body.uuid,
   }
-  let sql = 'SELECT data, DATE_FORMAT(updateTime, \"%Y/%m/%d %T\") AS checkoutTime FROM users WHERE uuid=?'
+  let sql = 'SELECT * FROM shoppingcart WHERE userId=?'
   let resSql = await query(sql, req.userId)
   let resData = {}
   if (resSql[0] === undefined) {
@@ -15,12 +15,24 @@ router.post('/shopCheckout', multer.array(), async (ctx, next) => {
       message: '付款失敗',
     }
   } else {
-    resSql = JSON.parse(JSON.stringify(resSql))[0]
-    console.log(resSql)
+    resSql = JSON.parse(JSON.stringify(resSql))
+    let totalAmountAll = 0
+    resSql.forEach((e) => {
+      totalAmountAll += e.totalAmount
+    })
+    let d = new Date()
+    let year = d.getFullYear()
+    let month = ('0' + (d.getMonth() + 1)).substr(-2)
+    let date = ('0' + d.getDate()).substr(-2)
+    let hours = ('0' + d.getHours()).substr(-2)
+    let minutes = ('0' + d.getMinutes()).substr(-2)
+    let seconds = ('0' + d.getSeconds()).substr(-2)
+    let nowTime = `${year}/${month}/${date} ${hours}:${minutes}:${seconds}`
+
     let base_param = {
       MerchantTradeNo: 'f0a0sa9fabkkuy111', //請帶20碼uid, ex: f0a0d7e9fae1bb72bc93
-      MerchantTradeDate: resSql.checkoutTime, //ex: 2017/02/13 15:45:30
-      TotalAmount: '100',
+      MerchantTradeDate: nowTime, //ex: 2017/02/13 15:45:30
+      TotalAmount: totalAmountAll,
       TradeDesc: '測試交易描述',
       ItemName: '測試商品等',
       ReturnURL:
@@ -38,6 +50,7 @@ router.post('/shopCheckout', multer.array(), async (ctx, next) => {
       // CustomField3: '',
       // CustomField4: ''
     }
+    console.log(base_param)
 
     // // 若要測試開立電子發票，請將inv_params內的"所有"參數取消註解 //
     // let inv_params = {

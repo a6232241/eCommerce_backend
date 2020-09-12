@@ -7,6 +7,7 @@ const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
 const cors = require('koa2-cors')
 const session = require('koa-session')
+const url = require('./src/utils/url')
 
 app.keys = ['secret'] // 這行是要生成 cookie 時使用的，也就是下方其中一個選項 signed 所需要
 const sessionConfig = {
@@ -34,8 +35,7 @@ app.use(
       if (ctx.url === '/') {
         return '*'
       }
-      // return 'https://e-commerce-plat.herokuapp.com'
-      return 'http://localhost:3000'
+      return url
     }, // 允许这个域名的 跨域请求
     exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
     maxAge: 5,
@@ -72,13 +72,13 @@ app.use(
 const index = require('./routes/index')
 const commodity = require('./routes/commodity')
 const shoppingCart = require('./routes/shoppingCart')
-const shopCheckout = require('./routes/shopCheckout')
+const payment = require('./routes/payment')
 
 // routes
 app.use(index.routes(), index.allowedMethods())
 app.use(commodity.routes(), commodity.allowedMethods())
 app.use(shoppingCart.routes(), shoppingCart.allowedMethods())
-app.use(shopCheckout.routes(), shopCheckout.allowedMethods())
+app.use(payment.routes(), payment.allowedMethods())
 
 const PORT = process.env.PORT || '8081'
 app.listen(PORT)

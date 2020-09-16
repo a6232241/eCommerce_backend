@@ -1,10 +1,8 @@
 const { query } = require('../../dbConfig')
-const ecpay_payment = require('ECPAY_Payment_node_js')
+const ecpay_payment = require('../../sdk/ECPAY_Payment_node_js')
 const url = require('./url')
-// const short = require('short-uuid')
-// const translator = short(short.constants.cookieBase90, {
-//   consistentLength: false,
-// })
+const uid = require('uid')
+
 const nowTime = () => {
   let d = new Date()
   let year = d.getFullYear()
@@ -19,6 +17,7 @@ const nowTime = () => {
 
 class GetPayment {
   async payAction(ctx, next) {
+    console.log(`${ctx.request.origin}/payment`)
     let req = {
       userId: ctx.query.uuid,
     }
@@ -42,19 +41,20 @@ class GetPayment {
       })
 
       let base_param = {
-        MerchantTradeNo: 'f0a0d7e9fae1bb72bc93', //請帶20碼uid, ex: f0a0d7e9fae1bb72bc93
+        MerchantTradeNo: uid(20), //請帶20碼uid, ex: f0a0d7e9fae1bb72bc93
         MerchantTradeDate: nowTime(), //ex: 2017/02/13 15:45:30
-        TotalAmount: 30,
-        TradeDesc: '測試交易描述',
+        TotalAmount: '30',
+        TradeDesc: itemName,
         ItemName: itemName,
-        ReturnURL: 'https://e-commerce-plat-cms.herokuapp.com/',
-        // ReturnURL: `${ctx.request.origin}/payment`,
+        // ReturnURL:
+        //   'https://us-central1-qraft-app.cloudfunctions.net/dev-createSampleOrder',
+        ReturnURL: `${ctx.request.origin}/payment`,
         // EncryptType: '1',
         // ChooseSubPayment: '',
-        // OrderResultURL: url,
+        OrderResultURL: url,
         // NeedExtraPaidInfo: '1',
         // ClientBackURL: 'https://www.google.com',
-        ItemURL: url,
+        // ItemURL: url,
         Remark: '該服務繳費成立時，恕不接受退款',
       }
 
@@ -66,6 +66,7 @@ class GetPayment {
           (parameters = base_param)
           // (invoice = inv_params)
         )
+
         resData = {
           message: '進入結帳',
           data: htm,
